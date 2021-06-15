@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OLs/0Q0eEu2Ofdn96W9zQHXZhHyyesU6zxU6yHhAYVmu5u38KXaVbXCkq3C2Es4Q34jDNX/gPQpxTTlpDUAv4Q==",
+  "dgSpecHash": "1ihCyCC3XpgpZoAb/DXRPSEkrBnRSgOpWj5owymJt9IRy2esutVPP9tSJDWpwM8jPPmPlU+jSpKesSpJFO3K8A==",
   "success": true,
-  "projectFilePath": "C:\\workspaces\\Microservices\\PostService\\PostService.csproj",
+  "projectFilePath": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\PostService\\PostService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\C\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\C\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

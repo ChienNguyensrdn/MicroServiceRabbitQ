@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XOBqKNgjimq+OL1aclQOfPOVluCmE75XXYIet9MoZ1VyxIOwU0XDm2aRZZfJSFt0Gcgq1vUD+Vpv7F1u8Zo9UA==",
+  "dgSpecHash": "NJRivaEhUH2HNQ/uJGWJT5GpC01aUZjIRmj+D233D4NsFDGvuld8CsgoWL9mCfpU2r3X5Ng2+uZRYBUrLdgE8Q==",
   "success": true,
-  "projectFilePath": "C:\\workspaces\\Microservices\\UserService\\UserService.csproj",
+  "projectFilePath": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\UserService\\UserService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\C\\.nuget\\packages\\antlr\\3.4.1.9004\\antlr.3.4.1.9004.nupkg.sha512",
     "C:\\Users\\C\\.nuget\\packages\\castle.core\\3.3.0\\castle.core.3.3.0.nupkg.sha512",

@@ -34,7 +34,7 @@ namespace PostService
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PostService", Version = "v1" });
             });
             services.AddDbContext<PostServiceContext>(options =>
-        options.UseSqlServer(Configuration.GetConnectionString("PostServiceContext")));
+            options.UseSqlServer(Configuration.GetConnectionString("PostServiceContext")));
            
         }
 

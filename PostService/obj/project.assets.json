@@ -5775,11 +5775,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\workspaces\\Microservices\\PostService\\PostService.csproj",
+      "projectUniqueName": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\PostService\\PostService.csproj",
       "projectName": "PostService",
-      "projectPath": "C:\\workspaces\\Microservices\\PostService\\PostService.csproj",
+      "projectPath": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\PostService\\PostService.csproj",
       "packagesPath": "C:\\Users\\C\\.nuget\\packages\\",
-      "outputPath": "C:\\workspaces\\Microservices\\PostService\\obj\\",
+      "outputPath": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\PostService\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\C\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -7,7 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\UserService.csproj", "{168C6E8E-ABEC-4791-B29C-2376DD453078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService", "PostService\PostService.csproj", "{854C10D6-5D70-4933-9907-889179802A73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostService", "PostService\PostService.csproj", "{854C10D6-5D70-4933-9907-889179802A73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveProcessService", "LeaveProcessService\LeaveProcessService.csproj", "{A1408100-B2BE-4E3C-B56B-47801B627E2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{854C10D6-5D70-4933-9907-889179802A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{854C10D6-5D70-4933-9907-889179802A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{854C10D6-5D70-4933-9907-889179802A73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1408100-B2BE-4E3C-B56B-47801B627E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1408100-B2BE-4E3C-B56B-47801B627E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1408100-B2BE-4E3C-B56B-47801B627E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1408100-B2BE-4E3C-B56B-47801B627E2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{168C6E8E-ABEC-4791-B29C-2376DD453078} = {7709F88A-E323-4217-9A97-CE3AB376DBE5}
 		{854C10D6-5D70-4933-9907-889179802A73} = {7709F88A-E323-4217-9A97-CE3AB376DBE5}
+		{A1408100-B2BE-4E3C-B56B-47801B627E2D} = {7709F88A-E323-4217-9A97-CE3AB376DBE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF1F15C0-C985-4C3F-A347-6F6F88970862}

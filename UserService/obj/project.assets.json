@@ -7069,11 +7069,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\workspaces\\Microservices\\UserService\\UserService.csproj",
+      "projectUniqueName": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\UserService\\UserService.csproj",
       "projectName": "UserService",
-      "projectPath": "C:\\workspaces\\Microservices\\UserService\\UserService.csproj",
+      "projectPath": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\UserService\\UserService.csproj",
       "packagesPath": "C:\\Users\\C\\.nuget\\packages\\",
-      "outputPath": "C:\\workspaces\\Microservices\\UserService\\obj\\",
+      "outputPath": "C:\\workspaces\\Microservices\\MicroServiceRabbitQ\\UserService\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\C\\AppData\\Roaming\\NuGet\\NuGet.Config",
