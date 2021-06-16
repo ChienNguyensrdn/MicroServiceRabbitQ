@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LeaveProcessService.Data;
+using LeaveProcessService.AppHelpers;
 namespace LeaveProcessService
 {
     public class Startup
@@ -32,8 +33,12 @@ namespace LeaveProcessService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LeaveProcessService", Version = "v1" });
             });
-            services.AddDbContext<LeaveProcessServiceContext >(options =>
-            options.UseOracle (Configuration.GetConnectionString("LeaveProcessServiceContext")));
+            String ConnectString = String.Empty;
+            using EncryptData encrypt = new EncryptData();
+            ConnectString = encrypt.DecryptString  (Configuration.GetConnectionString("LeaveProcessServiceContext"));
+            
+            services.AddDbContext<LeaveProcessServiceContext>(options =>
+                options.UseOracle(ConnectString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
