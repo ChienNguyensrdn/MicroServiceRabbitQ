@@ -31,5 +31,17 @@ namespace LeaveProcessService.Controllers
         {
             return await _context.LeaveSymbols.ToListAsync();
         }
+        [Route("Get/leave-shifts")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<LeaveShift>>> GetLeaveShifts()
+        {
+            var query = (from p in _context.LeaveShifts
+                         join t in _context.OtherListTypes on p.TYPE_ID equals t.ID
+                         where t.CODE == "LEAVE_SHIFT"
+                         select new LeaveShift { ID = p.ID, CODE = p.CODE, NAME_VN = p.NAME_VN }
+                       );
+         
+            return await query.ToListAsync();
+        }
     }
 }
