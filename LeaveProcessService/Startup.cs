@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LeaveProcessService.Data;
 using LeaveProcessService.AppHelpers;
+using LeaveProcessService.DataAcessHelper;
 namespace LeaveProcessService
 {
     public class Startup
@@ -29,6 +30,8 @@ namespace LeaveProcessService
         {
 
             services.AddControllers();
+            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddTransient<IOracleDBManager , OracleDBManager>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LeaveProcessService", Version = "v1" });
