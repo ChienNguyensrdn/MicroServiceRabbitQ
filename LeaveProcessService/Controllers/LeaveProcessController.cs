@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using LeaveProcessService.Data;
 using LeaveProcessService.Entities;
 using Microsoft.EntityFrameworkCore;
-
+using System.Data;
+using Oracle.ManagedDataAccess.Client;
+using Microsoft.Extensions.Configuration;
+using LeaveProcessService.DataAcessHelper;
 namespace LeaveProcessService.Controllers
 {
     [Route("api/[controller]")]
@@ -15,9 +18,12 @@ namespace LeaveProcessService.Controllers
     public class LeaveProcessController : ControllerBase
     {
         private readonly LeaveProcessServiceContext _context;
-        public LeaveProcessController(LeaveProcessServiceContext context)
+        private IConfiguration _configuration;
+        private IOracleDBManager _oracleDBManager;
+        public LeaveProcessController(LeaveProcessServiceContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         [Route("Get/leave-types")]
         [HttpGet]
@@ -43,5 +49,14 @@ namespace LeaveProcessService.Controllers
          
             return await query.ToListAsync();
         }
+
+        [Route("Get/titleJobs")]
+        [HttpGet]
+        public async Task<ActionResult<DataTable>> GetTitleJobs()
+        {
+            _oracleDBManager = new OracleDBManager("PKG_WS_HRM_INTEGRATED.HRM01", CommandType.StoredProcedure , _configuration.GetConnectionString("DbConnect").ToString());
+            return await _oracleDBManager.GetDataTableAsync();
+        }
+
     }
 }
