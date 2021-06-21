@@ -25,12 +25,32 @@ namespace LeaveProcessService.Controllers
             _context = context;
             _configuration = configuration;
         }
+        #region List 
         [Route("Get/leave-types")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveType>>> GetLeaveTypes()
         {
-            return await _context.LeaveTypes.ToListAsync();
+            var query =  (from p in _context.LeaveTypes where p.IS_LEAVE == true select p);
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            return await query.ToListAsync();
         }
+
+        [Route("Get/leave-types/{id}")]
+        [HttpGet]
+        public async Task<ActionResult<LeaveType>> GetLeaveTypes(int id )
+        {
+            var objData = await _context.LeaveTypes.FindAsync(id);
+            if (objData == null)
+            {
+                return NotFound();
+            }
+            return objData;
+        }
+
         [Route("Get/leave-symbols")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveSymbol>>> GetLeaveSymbols()
@@ -77,14 +97,7 @@ namespace LeaveProcessService.Controllers
          
             return await query.ToListAsync();
         }
-        /*
-        [Route("Get/title-jobs")]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<DataTable>>> GetTitleJobs()
-        {
-            _oracleDBManager = new OracleDBManager("PKG_WS_HRM_INTEGRATED.HRM01", CommandType.StoredProcedure, _configuration.GetConnectionString("DbConnect").ToString());
-            return await _oracleDBManager.GetDataTableAsync();
-        }
-        */
+      
     }
+    #endregion
 }
