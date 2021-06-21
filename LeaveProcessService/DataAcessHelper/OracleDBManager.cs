@@ -36,6 +36,14 @@ namespace LeaveProcessService.DataAcessHelper
             ConnectionString = _ConnectionString;
         }
 
+        public OracleDBManager(OracleCommand command, string _ConnectionString)
+        {
+            _command = command;
+            _command.CommandTimeout = 120;
+            ConnectionString = _ConnectionString;
+        }
+
+
         #region IndexOf Method
 
         /// <summary>
