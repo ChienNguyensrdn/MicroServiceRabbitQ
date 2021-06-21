@@ -18,6 +18,6 @@ namespace LeaveProcessService.Entities
         public string NAME_EN { get; set; }
         public string NOTE { get; set; }
         public string ACTFLG { get; set; }
-        public bool? IS_LEAVE { get; set; }
+        public bool IS_LEAVE { get; set; }
     }
 }
