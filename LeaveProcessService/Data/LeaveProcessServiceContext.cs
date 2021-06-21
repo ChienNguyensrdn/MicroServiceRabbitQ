@@ -16,10 +16,10 @@ namespace LeaveProcessService.Data
         public  DbSet<LeaveProcessService.Entities.OtherListType> OtherListTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<LeaveProcessService.Entities.LeaveType>().ToTable("AT_FML", "SNP_CR");
-            modelBuilder.Entity<LeaveProcessService.Entities.LeaveShift>().ToTable("OT_OTHER_LIST", "SNP_CR");
-            modelBuilder.Entity<LeaveProcessService.Entities.LeaveSymbol>().ToTable("AT_TIME_MANUAL", "SNP_CR");
-            modelBuilder.Entity<LeaveProcessService.Entities.OtherListType>().ToTable("OT_OTHER_LIST_TYPE", "SNP_CR");
+            modelBuilder.Entity<LeaveProcessService.Entities.LeaveType>().ToTable("AT_FML");
+            modelBuilder.Entity<LeaveProcessService.Entities.LeaveShift>().ToTable("OT_OTHER_LIST");
+            modelBuilder.Entity<LeaveProcessService.Entities.LeaveSymbol>().ToTable("AT_TIME_MANUAL");
+            modelBuilder.Entity<LeaveProcessService.Entities.OtherListType>().ToTable("OT_OTHER_LIST_TYPE");
         }
     }
 }
