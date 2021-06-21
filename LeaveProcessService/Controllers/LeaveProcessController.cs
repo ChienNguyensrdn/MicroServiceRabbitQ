@@ -25,8 +25,12 @@ namespace LeaveProcessService.Controllers
             _context = context;
             _configuration = configuration;
         }
+        #region Leave process
+
+        #endregion Leave process
+
         #region List 
-        [Route("Get/leave-types")]
+        [Route("leave-types")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveType>>> GetLeaveTypes()
         {
@@ -39,11 +43,11 @@ namespace LeaveProcessService.Controllers
             return await query.ToListAsync();
         }
 
-        [Route("Get/leave-types/{id}")]
+        [Route("leave-types/{typeId}")]
         [HttpGet]
-        public async Task<ActionResult<LeaveType>> GetLeaveTypes(int id )
+        public async Task<ActionResult<LeaveType>> GetLeaveTypes(int typeId )
         {
-            var objData = await _context.LeaveTypes.FindAsync(id);
+            var objData = await _context.LeaveTypes.FindAsync(typeId);
             if (objData == null)
             {
                 return NotFound();
@@ -51,18 +55,18 @@ namespace LeaveProcessService.Controllers
             return objData;
         }
 
-        [Route("Get/leave-symbols")]
+        [Route("leave-symbols")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveSymbol>>> GetLeaveSymbols()
         {
             return await _context.LeaveSymbols.ToListAsync();
         }
 
-        [Route("Get/leave-symbols/{id}")]
+        [Route("leave-symbols/{symbolId}")]
         [HttpGet]
-        public async Task<ActionResult<LeaveSymbol>> GetLeaveSymbols(int id)
+        public async Task<ActionResult<LeaveSymbol>> GetLeaveSymbols(int symbolId)
         {
-            var objData = await  _context.LeaveSymbols.FindAsync(id);
+            var objData = await  _context.LeaveSymbols.FindAsync(symbolId);
             if(objData==null)
             {
                 return NotFound();
@@ -70,12 +74,12 @@ namespace LeaveProcessService.Controllers
             return objData;
         }
 
-        [Route("Get/leave-shifts/{id}")]
+        [Route("leave-shifts/{shiftId}")]
         [HttpGet]
-        public async Task<ActionResult<LeaveShift>> GetLeaveShifts(int id)
+        public async Task<ActionResult<LeaveShift>> GetLeaveShifts(int shiftId)
         {
             var query = (from p in _context.LeaveShifts
-                         where   p.ID==id
+                         where   p.ID== shiftId
                          select new LeaveShift { ID = p.ID, CODE = p.CODE, NAME_VN = p.NAME_VN }
                        );
             if (query ==null)
@@ -85,7 +89,7 @@ namespace LeaveProcessService.Controllers
             return await query.FirstOrDefaultAsync();
         }
 
-        [Route("Get/leave-shifts")]
+        [Route("leave-shifts")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveShift>>> GetLeaveShifts()
         {
