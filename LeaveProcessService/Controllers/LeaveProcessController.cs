@@ -26,7 +26,7 @@ namespace LeaveProcessService.Controllers
             _configuration = configuration;
         }
         #region Leave process
-
+        [Route("")]
         #endregion Leave process
 
         #region List 
