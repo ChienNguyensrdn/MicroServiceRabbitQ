@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using LeaveProcessService.Data;
@@ -28,6 +29,97 @@ namespace LeaveProcessService.Controllers
             _configuration = configuration;
         }
         #region Leave process
+        [Route("leave-sheet/employeeId/{employeeId}/page/{page}/pageSize/{pageSize}")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Leavesheet>>> GetLeaveSheets(int employeeId = -1, int page=1 , int pageSize =50)
+        {
+            try
+            {
+                if (employeeId == -1)
+                {
+                    return await _context.LeaveSheets.Skip(page * pageSize).Take(pageSize).ToListAsync();
+                }
+                return await _context.LeaveSheets.Where(x => x.EMPLOYEE_ID == employeeId).Skip(page * pageSize).Take(pageSize).ToListAsync();
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("leave-sheet")]
+        [HttpDelete]
+        public async Task<ActionResult<ResponseResult>> DeleteLeaveSheet (int leavesheetId)
+        {
+            ResponseResult responseResult;
+            try
+            {
+                //validate trươc khi xoa...
+
+                Leavesheet leavesheet =await _context.LeaveSheets.Where(x => x.ID == leavesheetId).SingleAsync<Leavesheet>();
+                if (leavesheet == null)
+                {
+                    return NotFound();
+                }
+                foreach (var item in _context.LeavesheetDetails.Where(x => x.LEAVE_ID_PH == leavesheet.ID).ToList())
+                {
+                    _context.Remove(item);
+                }
+                _context.Remove(leavesheet);
+                _context.SaveChanges();
+                return Ok();
+            }catch(Exception ex)
+            {
+                responseResult = new ResponseResult();
+                responseResult.Message = ex.ToString();
+                responseResult.Responsestatus = (int)HttpStatusCode.BadRequest;
+                return responseResult;
+            }
+            finally
+            {
+                responseResult = null;
+            }
+        }
+
+        [Route("approve-leave-sheets")]
+        [HttpPut]
+        public async Task<ActionResult<ResponseResult>> ApproveLeaveSheets(string  leaveIds = ",",string approveStatus= "APPROVE1")
+        {
+            switch (approveStatus)
+            {
+               
+            }
+            try
+            {
+                OracleCommand command = new OracleCommand();
+                command.CommandText = "PKG_ATTENDANCE_BUSINESS.APPROVELEAVESHEET";
+                command.CommandType = CommandType.StoredProcedure;
+               
+                _oracleDBManager = new OracleDBManager(command, _configuration.GetConnectionString("DbConnect").ToString());
+                await _oracleDBManager.ExecuteNonQueryAsync();
+                ResponseResult responseResult = new ResponseResult();
+                responseResult.Responsestatus = int.Parse(command.Parameters["P_RESPONSESTATUS"].Value?.ToString());
+                if (responseResult.Responsestatus > 0)
+                {
+                    responseResult.Responsestatus = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    responseResult.Responsestatus = (int)HttpStatusCode.NotFound;
+                }
+                responseResult.Message = command.Parameters["P_MESSAGE"].Value.ToString(); ;
+                return responseResult;
+            }
+            catch(Exception ex )
+            {
+                ResponseResult responseResult = new ResponseResult();
+                responseResult.Message = ex.ToString();
+                responseResult.Responsestatus = (int)HttpStatusCode.BadRequest;
+                return responseResult;
+            }
+        }
+
+
         [Route("validate-register-leave")]
         [HttpPost]
         public async Task<ActionResult<ResponseResult>> ValidateRgisterLeave(ValidateLeavesheet leavesheet)
@@ -39,11 +131,11 @@ namespace LeaveProcessService.Controllers
             {
                 //clientContentType = Request.Headers.ContentType.ToString();
                 //clientAccept = Request.Headers.ToString();
-               
+               //validate ContentType ....
                 OracleCommand command = new OracleCommand();
                 command.CommandText = "PKG_ATTENDANCE_BUSINESS.VALIDATE_LEAVE";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(new OracleParameter("P_EMP_ID", OracleDbType.Decimal, leavesheet.employeeId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_EMP_ID", OracleDbType.Decimal, 10,leavesheet.employeeId, ParameterDirection.Input));
                 command.Parameters.Add(new OracleParameter("P_FROMDATE", OracleDbType.NVarchar2, 8, leavesheet.leaveFrom, ParameterDirection.Input));
                 command.Parameters.Add(new OracleParameter("P_TODATE", OracleDbType.NVarchar2, 8, leavesheet.leaveTo, ParameterDirection.Input));
                 command.Parameters.Add(new OracleParameter("P_LEAVETYPE", OracleDbType.Decimal, 10, leavesheet.leaveType, ParameterDirection.Input));
@@ -75,10 +167,22 @@ namespace LeaveProcessService.Controllers
             }
            
         }
-      
+
         #endregion Leave process
 
         #region List 
+        [Route("approve-status")]
+        [HttpGet]
+        public  ActionResult<List<DictionaryEntry>> GetApproveStatus()
+        {
+            List<DictionaryEntry> ApproveStatus = new List<DictionaryEntry>();
+            ApproveStatus.Add(new DictionaryEntry("Phê duyệt 1", "APPROVE1"));
+            ApproveStatus.Add(new DictionaryEntry("Phê duyệt 2", "APPROVE2"));
+            ApproveStatus.Add(new DictionaryEntry("Hoàn duyệt", "RESET"));
+            ApproveStatus.Add(new DictionaryEntry("Hủy đơn", "REJECT"));
+            return  ApproveStatus;
+        }
+
         [Route("leave-types")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveType>>> GetLeaveTypes()
