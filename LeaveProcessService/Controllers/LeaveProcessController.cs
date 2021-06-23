@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LeaveProcessService.Data;
 using LeaveProcessService.Entities;
+using LeaveProcessService.Request;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
@@ -16,7 +17,7 @@ using System.Net;
 
 namespace LeaveProcessService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("partner/[controller]")]
     [ApiController]
     public class LeaveProcessController : ControllerBase
     {
@@ -83,18 +84,51 @@ namespace LeaveProcessService.Controllers
 
         [Route("approve-leave-sheets")]
         [HttpPut]
-        public async Task<ActionResult<ResponseResult>> ApproveLeaveSheets(string  leaveIds = ",",string approveStatus= "APPROVE1")
+        public async Task<ActionResult<ResponseResult>> ApproveLeaveSheets(ApproveRequest approveRequest)
         {
-            switch (approveStatus)
+            int statusId = 0;
+            if (approveRequest == null)
             {
-               
+                return NotFound();
+            }
+            switch (approveRequest.statusCode)
+            {
+                case "APPROVE1":
+                    statusId = 3;
+                    break;
+                case "APPROVE2":
+                    statusId = 1;
+                    break;
+                case "RESET":
+                    statusId = 0;
+                    break;
+                case "REJECT":
+                    statusId = 2;//ko duet
+                    break;
+                case "CANCEL":
+                    statusId=-1;
+                    break;
+                default:
+                    statusId = -99;
+                    break;
+            }
+            if(statusId==-99)
+            {
+                ResponseResult responseResult = new ResponseResult();
+                responseResult.Message = "Approve status is incorrect";
+                responseResult.Responsestatus = (int)HttpStatusCode.NotFound ;
+                return responseResult;
             }
             try
             {
                 OracleCommand command = new OracleCommand();
-                command.CommandText = "PKG_ATTENDANCE_BUSINESS.APPROVELEAVESHEET";
+                command.CommandText = "PKG_ATTENDANCE_BUSINESS.APPROVELEAVESHEETAPI";
                 command.CommandType = CommandType.StoredProcedure;
-               
+                command.Parameters.Add(new OracleParameter("P_IDS", OracleDbType.Clob, 1000,approveRequest.leavesheetIds, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_ACTIVE", OracleDbType.Decimal, 2, statusId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_USER", OracleDbType.NVarchar2, 50, approveRequest.userName, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_MESSAGE", OracleDbType.NVarchar2, 500, "", ParameterDirection.Output));
+                command.Parameters.Add(new OracleParameter("P_RESPONSESTATUS", OracleDbType.Int16, 10, -1, ParameterDirection.Output));
                 _oracleDBManager = new OracleDBManager(command, _configuration.GetConnectionString("DbConnect").ToString());
                 await _oracleDBManager.ExecuteNonQueryAsync();
                 ResponseResult responseResult = new ResponseResult();
@@ -179,7 +213,8 @@ namespace LeaveProcessService.Controllers
             ApproveStatus.Add(new DictionaryEntry("Phê duyệt 1", "APPROVE1"));
             ApproveStatus.Add(new DictionaryEntry("Phê duyệt 2", "APPROVE2"));
             ApproveStatus.Add(new DictionaryEntry("Hoàn duyệt", "RESET"));
-            ApproveStatus.Add(new DictionaryEntry("Hủy đơn", "REJECT"));
+            ApproveStatus.Add(new DictionaryEntry("Không duyệt", "REJECT"));
+             ApproveStatus.Add(new DictionaryEntry("Hủy đơn", "CANCEL"));
             return  ApproveStatus;
         }
 

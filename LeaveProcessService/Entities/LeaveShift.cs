@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LeaveProcessService.Entities
 {
-    [Table("SNP_CR.OT_OTHER_LIST")]
+    [Table("OT_OTHER_LIST")]
     public class LeaveShift
     {
         [Key]

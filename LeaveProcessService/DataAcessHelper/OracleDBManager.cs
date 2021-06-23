@@ -13,7 +13,7 @@ namespace LeaveProcessService.DataAcessHelper
 {
     public class OracleDBManager:IOracleDBManager, IDisposable
     {
-        IConfiguration _configuration;
+        //IConfiguration _configuration;
         public OracleCommand _command;
         private  readonly string ConnectionString = "";
         public OracleDBManager()
