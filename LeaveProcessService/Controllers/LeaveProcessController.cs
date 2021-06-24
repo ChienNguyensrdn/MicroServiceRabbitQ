@@ -17,7 +17,7 @@ using System.Net;
 
 namespace LeaveProcessService.Controllers
 {
-    [Route("partner/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class LeaveProcessController : ControllerBase
     {
@@ -262,13 +262,13 @@ namespace LeaveProcessService.Controllers
             return objData;
         }
 
-        [Route("leave-shifts/{shiftId}")]
+        [Route("leave-times/{timeId}")]
         [HttpGet]
-        public async Task<ActionResult<LeaveShift>> GetLeaveShifts(int shiftId)
+        public async Task<ActionResult<LeaveTime>> GetLeaveTime(int timeId)
         {
-            var query = (from p in _context.LeaveShifts
-                         where   p.ID== shiftId
-                         select new LeaveShift { ID = p.ID, CODE = p.CODE, NAME_VN = p.NAME_VN }
+            var query = (from p in _context.LeaveTimes
+                         where   p.ID== timeId
+                         select new LeaveTime { ID = p.ID, CODE = p.CODE, NAME_VN = p.NAME_VN }
                        );
             if (query ==null)
             {
@@ -277,14 +277,14 @@ namespace LeaveProcessService.Controllers
             return await query.FirstOrDefaultAsync();
         }
 
-        [Route("leave-shifts")]
+        [Route("leave-times")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveShift>>> GetLeaveShifts()
+        public async Task<ActionResult<IEnumerable<LeaveTime>>> GetLeaveTimes()
         {
-            var query = (from p in _context.LeaveShifts
+            var query = (from p in _context.LeaveTimes
                          join t in _context.OtherListTypes on p.TYPE_ID equals t.ID
                          where t.CODE == "LEAVE_SHIFT"
-                         select new LeaveShift { ID = p.ID, CODE = p.CODE, NAME_VN = p.NAME_VN }
+                         select new LeaveTime { ID = p.ID, CODE = p.CODE, NAME_VN = p.NAME_VN }
                        );
          
             return await query.ToListAsync();
