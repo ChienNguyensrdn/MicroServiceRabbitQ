@@ -1707,6 +1707,7 @@
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.10.14",
       "Newtonsoft.Json >= 13.0.1",
       "Oracle.EntityFrameworkCore >= 5.21.1",
+      "Oracle.ManagedDataAccess.Core >= 3.21.1",
       "Swashbuckle.AspNetCore >= 5.6.3"
     ]
   },
@@ -1760,6 +1761,10 @@
           "Oracle.EntityFrameworkCore": {
             "target": "Package",
             "version": "[5.21.1, )"
+          },
+          "Oracle.ManagedDataAccess.Core": {
+            "target": "Package",
+            "version": "[3.21.1, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
