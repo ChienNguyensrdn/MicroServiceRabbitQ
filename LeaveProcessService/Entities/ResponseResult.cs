@@ -9,5 +9,6 @@ namespace LeaveProcessService.Entities
     {
         public int  Responsestatus { get; set; }
         public String Message { get; set; }
+       // List<Object> Data { get; set; }
     }
 }

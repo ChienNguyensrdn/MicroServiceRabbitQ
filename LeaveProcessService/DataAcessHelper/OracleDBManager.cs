@@ -118,10 +118,7 @@ namespace LeaveProcessService.DataAcessHelper
             {
                 _command.Connection = conn;
                 await conn.OpenAsync();
-                _command.Parameters.Add("P_CUR", OracleDbType.RefCursor, ParameterDirection.Output);
                 OracleDataAdapter adapter = new OracleDataAdapter(_command);
-                //await _command.ExecuteNonQueryAsync();
-                //await adapter.Fill(rslt);
                 await Task.Run(() => adapter.Fill(rslt));
             }
             return rslt;

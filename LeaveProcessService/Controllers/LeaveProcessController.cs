@@ -30,6 +30,66 @@ namespace LeaveProcessService.Controllers
             _configuration = configuration;
         }
         #region Leave process
+        [Route("leave-entitlement")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Entitlement>>> GetEntitlements(string employeeId,int year=2021)
+        {
+            DataTable dataTable = new DataTable();
+            List<Entitlement> lsResult = new List<Entitlement>();
+            try
+            {
+                OracleCommand command = new OracleCommand();
+                command.CommandText = "PKG_ATTENDANCE_BUSINESS.GET_REMAIN_LEAVE_SHEET_API";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add(new OracleParameter("P_EMP_IDS", OracleDbType.Clob, 1000, employeeId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_YEAR", OracleDbType.Decimal, 4, year, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_CUR", OracleDbType.RefCursor, ParameterDirection.Output));
+                _oracleDBManager = new OracleDBManager(command, _configuration.GetConnectionString("DbConnect").ToString());
+                dataTable=await _oracleDBManager.GetDataTableAsync();
+                if(dataTable ==null || dataTable?.Rows.Count<1)
+                {
+                    return NotFound();
+                }
+                foreach(DataRow rows in dataTable.Rows)
+                {
+                    Entitlement entitlement = new Entitlement();
+                    entitlement.employeeId =int.Parse( rows["ID"]?.ToString());
+                    entitlement.employeeCode = rows["EMPLOYEE_CODE"]?.ToString();
+                    entitlement.employeeName = rows["FULLNAME_VN"]?.ToString();
+                    entitlement.orgName = rows["ORG_NAME"]?.ToString();
+                    entitlement.titleName = rows["TITLE_NAME"]?.ToString();
+                    entitlement.curHave =decimal.Parse( rows["CUR_HAVE"]?.ToString());
+                    lsResult.Add(entitlement);
+                    entitlement = null;
+                }
+                return lsResult;
+            }
+            catch(Exception ex)
+            {
+                return NotFound();
+            }
+            finally
+            {
+                dataTable.Dispose();
+                lsResult = null;
+            }
+        }
+        [Route ("register-leave")]
+        [HttpPost]
+        public async Task<ActionResult<ResponseResult>> RegisterLeave(Entitlement entitlement)
+        {
+            ResponseResult responseResult;
+            try
+            {
+                return Ok();
+            }catch(Exception ex)
+            {
+                responseResult = new ResponseResult();
+                responseResult.Responsestatus = (int)HttpStatusCode.NoContent;
+                responseResult.Message = ex.ToString();
+                return responseResult;
+            }
+        }
         [Route("leave-sheet/employeeId/{employeeId}/page/{page}/pageSize/{pageSize}")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Leavesheet>>> GetLeaveSheets(int employeeId = -1, int page=1 , int pageSize =50)
