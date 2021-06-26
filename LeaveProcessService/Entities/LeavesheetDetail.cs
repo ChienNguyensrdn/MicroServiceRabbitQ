@@ -21,7 +21,7 @@ namespace LeaveProcessService.Entities
         public Decimal? IS_RETURN_DAY_OFF { get; set; }
         public DateTime? RETURN_DAY_OFF_DATE { get; set; }
         public Decimal? LEAVE_ID_PH { get; set; }
-        public Leavesheet Leavesheet { get; set; }
+        //public Leavesheet Leavesheet { get; set; }
         public Decimal? LEAVE_DAYS { get; set; }
     }
 }

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace LeaveProcessService.Entities
 {
-    [Table("SNP_CR.AT_FML")]
-    public class LeaveType
+    [Table("AT_FML")]
+    public class LeaveManual
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

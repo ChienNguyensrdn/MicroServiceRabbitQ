@@ -32,6 +32,6 @@ namespace LeaveProcessService.Entities
         public String LEAVE_REASON { get; set; }
         //tra phep 
         public bool? IS_RETURN_DAY_OFF { get; set; }
-        public List<LeavesheetDetail> LeavesheetDetails { get; set; }
+       // public List<LeavesheetDetail> LeavesheetDetails { get; set; }
     }
 }

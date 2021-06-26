@@ -19,7 +19,7 @@ namespace LeaveProcessService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LeaveProcessController : ControllerBase
+    public partial class LeaveProcessController : ControllerBase
     {
         private readonly LeaveProcessServiceContext _context;
         private IConfiguration _configuration;
@@ -36,9 +36,10 @@ namespace LeaveProcessService.Controllers
         {
             DataTable dataTable = new DataTable();
             List<Entitlement> lsResult = new List<Entitlement>();
+            OracleCommand command = new OracleCommand();
             try
             {
-                OracleCommand command = new OracleCommand();
+               
                 command.CommandText = "PKG_ATTENDANCE_BUSINESS.GET_REMAIN_LEAVE_SHEET_API";
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.Add(new OracleParameter("P_EMP_IDS", OracleDbType.Clob, 1000, employeeId, ParameterDirection.Input));
@@ -72,17 +73,24 @@ namespace LeaveProcessService.Controllers
             {
                 dataTable.Dispose();
                 lsResult = null;
+                command.Dispose();
             }
         }
         [Route ("register-leave")]
         [HttpPost]
-        public async Task<ActionResult<ResponseResult>> RegisterLeave(Entitlement entitlement)
+        public async Task<ActionResult<ResponseResult>> RegisterLeave(EntitlementRequest entitlementRequest)
         {
             ResponseResult responseResult;
             try
             {
-                return Ok();
-            }catch(Exception ex)
+                //validate data fields ....
+                //validate .....
+                responseResult = new ResponseResult();
+                responseResult.Message = "Successs";
+                responseResult.Responsestatus = (int)HttpStatusCode.OK;
+                return responseResult;
+            }
+            catch(Exception ex)
             {
                 responseResult = new ResponseResult();
                 responseResult.Responsestatus = (int)HttpStatusCode.NoContent;
@@ -90,7 +98,7 @@ namespace LeaveProcessService.Controllers
                 return responseResult;
             }
         }
-        [Route("leave-sheet/employeeId/{employeeId}/page/{page}/pageSize/{pageSize}")]
+        [Route("leave-sheets/employeeId/{employeeId}/page/{page}/pageSize/{pageSize}")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Leavesheet>>> GetLeaveSheets(int employeeId = -1, int page=1 , int pageSize =50)
         {
@@ -101,6 +109,35 @@ namespace LeaveProcessService.Controllers
                     return await _context.LeaveSheets.Skip(page * pageSize).Take(pageSize).ToListAsync();
                 }
                 return await _context.LeaveSheets.Where(x => x.EMPLOYEE_ID == employeeId).Skip(page * pageSize).Take(pageSize).ToListAsync();
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("leave-replaces/page/{page}/pageSize/{pageSize}")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Employee>>> GetLeaveReplaces(int page = 1, int pageSize = 50)
+        {
+            try
+            {
+                return await _context.Employees.Skip(page * pageSize).Take(pageSize).ToListAsync();
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+
+        [Route("leave-replaces/employeeId/{employeeId}")]
+        [HttpGet]
+        public async Task<ActionResult<Employee>> GetLeaveReplaces(int employeeId)
+        {
+            try
+            {
+                return await _context.Employees.Where(x => x.Id == employeeId).FirstAsync();
             }
             catch
             {
@@ -128,8 +165,12 @@ namespace LeaveProcessService.Controllers
                 }
                 _context.Remove(leavesheet);
                 _context.SaveChanges();
-                return Ok();
-            }catch(Exception ex)
+                responseResult = new ResponseResult();
+                responseResult.Message = "Successs";
+                responseResult.Responsestatus = (int)HttpStatusCode.OK;
+                return responseResult;
+            }
+            catch(Exception ex)
             {
                 responseResult = new ResponseResult();
                 responseResult.Message = ex.ToString();
@@ -278,11 +319,11 @@ namespace LeaveProcessService.Controllers
             return  ApproveStatus;
         }
 
-        [Route("leave-types")]
+        [Route("leave-manuals")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveType>>> GetLeaveTypes()
+        public async Task<ActionResult<IEnumerable<LeaveManual>>> GetLeaveManuals()
         {
-            var query =  (from p in _context.LeaveTypes where p.IS_LEAVE == true select p);
+            var query =  (from p in _context.LeaveManuals where p.IS_LEAVE == true select p);
             if (query == null)
             {
                 return NotFound();
@@ -291,11 +332,11 @@ namespace LeaveProcessService.Controllers
             return await query.ToListAsync();
         }
 
-        [Route("leave-types/{typeId}")]
+        [Route("leave-manuals/{manualId}")]
         [HttpGet]
-        public async Task<ActionResult<LeaveType>> GetLeaveTypes(int typeId )
+        public async Task<ActionResult<LeaveManual>> GetLeaveManuals(int manualId )
         {
-            var objData = await _context.LeaveTypes.FindAsync(typeId);
+            var objData = await _context.LeaveManuals.FindAsync(manualId);
             if (objData == null)
             {
                 return NotFound();

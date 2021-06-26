@@ -10,24 +10,28 @@ namespace LeaveProcessService.Data
            : base(options)
         {
         }
-        public  DbSet<LeaveProcessService.Entities.LeaveType> LeaveTypes { get; set; }
+        public  DbSet<LeaveProcessService.Entities.LeaveManual> LeaveManuals { get; set; }
         public  DbSet<LeaveProcessService.Entities.LeaveSymbol > LeaveSymbols   { get; set; }
         public  DbSet<LeaveProcessService.Entities.LeaveTime> LeaveTimes { get; set; }
         public  DbSet<LeaveProcessService.Entities.OtherListType> OtherListTypes { get; set; }
         public DbSet<LeaveProcessService.Entities.Leavesheet> LeaveSheets { get; set; }
         public DbSet<LeaveProcessService.Entities.LeavesheetDetail> LeavesheetDetails { get; set; }
+        public DbSet<LeaveProcessService.Entities.Employee> Employees { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<LeaveProcessService.Entities.LeaveType>().ToTable("AT_FML");
+            modelBuilder.Entity<LeaveProcessService.Entities.LeaveManual>().ToTable("AT_FML");
             modelBuilder.Entity<LeaveProcessService.Entities.LeaveTime>().ToTable("OT_OTHER_LIST");
             modelBuilder.Entity<LeaveProcessService.Entities.LeaveSymbol>().ToTable("AT_TIME_MANUAL");
             modelBuilder.Entity<LeaveProcessService.Entities.OtherListType>().ToTable("OT_OTHER_LIST_TYPE");
             modelBuilder.Entity<LeaveProcessService.Entities.Leavesheet>().ToTable("AT_LEAVESHEET_PH");
             modelBuilder.Entity<LeaveProcessService.Entities.LeavesheetDetail>().ToTable("AT_LEAVESHEET");
-            modelBuilder.Entity<LeaveProcessService.Entities.LeavesheetDetail>()
-                .HasOne(p => p.Leavesheet)
-                .WithMany(b => b.LeavesheetDetails)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<LeaveProcessService.Entities.Employee>().ToTable("HU_EMPLOYEE");
+            modelBuilder.Entity<LeaveProcessService.Entities.Employee>().Property(i => i.employeeCode).HasColumnName("EMPLOYEE_CODE");
+            modelBuilder.Entity<LeaveProcessService.Entities.Employee>().Property(i => i.Id).HasColumnName("ID");
+            modelBuilder.Entity<LeaveProcessService.Entities.Employee>().Property(i => i.fullName).HasColumnName("FULLNAME_VN");
+            modelBuilder.Entity<LeaveProcessService.Entities.Employee>().Property(i => i.is3B).HasColumnName("IS_3B");
+            modelBuilder.Entity<LeaveProcessService.Entities.Employee>().Property(i => i.terLastDate).HasColumnName("TER_LAST_DATE");
+            //modelBuilder
         }
     }
 }
