@@ -10,6 +10,9 @@ namespace LeaveProcessService.Request
     public class EntitlementRequest
     {
         [Required]
+        [StringLength(20, MinimumLength = 1, ErrorMessage ="Max length 20")]
+        public string leaveEOfficeId { get; set; }
+        [Required]
         public int employeeId { get; set; }
         [Required]
         [DefaultValue("21062021")]

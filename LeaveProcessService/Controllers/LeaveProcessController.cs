@@ -81,13 +81,44 @@ namespace LeaveProcessService.Controllers
         public async Task<ActionResult<ResponseResult>> RegisterLeave(EntitlementRequest entitlementRequest)
         {
             ResponseResult responseResult;
+            OracleCommand command;
             try
             {
+                 command = new OracleCommand();
                 //validate data fields ....
                 //validate .....
+
+                command.CommandText = "PKG_ATTENDANCE_BUSINESS.INSERT_AT_LEAVESHEET_API";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add(new OracleParameter("P_ID_EOFFICE", OracleDbType.NVarchar2, 20, entitlementRequest.leaveEOfficeId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_EMOLOYEE_ID", OracleDbType.Int16, 10, entitlementRequest.employeeId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LEAVE_FROM", OracleDbType.NVarchar2, 8, entitlementRequest.leaveFrom, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LEAVE_TO", OracleDbType.NVarchar2, 8, entitlementRequest.leaveTo, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_MANUAL_ID", OracleDbType.Int16, 10, entitlementRequest.manualId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LEAVE_TIME_ID", OracleDbType.Int16, 10, entitlementRequest.leaveTimeId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LEAVE_PLACE", OracleDbType.NVarchar2, 100, entitlementRequest.leavePlace, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LEAVE_REASON", OracleDbType.NVarchar2, 100, entitlementRequest.leaveReason, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_IS_OFFSHORE", OracleDbType.Boolean, 1, entitlementRequest.isOffshore, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_NOTE", OracleDbType.NVarchar2, 100, entitlementRequest.note, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LEAVE_REPLACE_ID", OracleDbType.Int16, 10, entitlementRequest.leaveReplaceId, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_BALANCE_NOW", OracleDbType.Int16, 10, entitlementRequest.balanceNow, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_USER", OracleDbType.NVarchar2, 20, entitlementRequest.userLog, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_LOG", OracleDbType.NVarchar2, 10, HttpRequestHeader.Host.ToString(), ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_MESSAGE", OracleDbType.NVarchar2, 500, "", ParameterDirection.Output));
+                command.Parameters.Add(new OracleParameter("P_RESPONSESTATUS", OracleDbType.Int16, 10, -1, ParameterDirection.Output));
+                _oracleDBManager = new OracleDBManager(command, _configuration.GetConnectionString("DbConnect").ToString());
+                await _oracleDBManager.ExecuteNonQueryAsync();
                 responseResult = new ResponseResult();
-                responseResult.Message = "Successs";
-                responseResult.Responsestatus = (int)HttpStatusCode.OK;
+                responseResult.Responsestatus = int.Parse(command.Parameters["P_RESPONSESTATUS"].Value?.ToString());
+                if (responseResult.Responsestatus > 0)
+                {
+                    responseResult.Responsestatus = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    responseResult.Responsestatus = (int)HttpStatusCode.NotFound;
+                }
+                responseResult.Message = command.Parameters["P_MESSAGE"].Value.ToString(); ;
                 return responseResult;
             }
             catch(Exception ex)
