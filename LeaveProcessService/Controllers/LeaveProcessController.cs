@@ -14,6 +14,7 @@ using Oracle.ManagedDataAccess.Client;
 using Microsoft.Extensions.Configuration;
 using LeaveProcessService.DataAcessHelper;
 using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace LeaveProcessService.Controllers
 {
@@ -30,6 +31,115 @@ namespace LeaveProcessService.Controllers
             _configuration = configuration;
         }
         #region Leave process
+        [Route("leave-total-register-day")]
+        [HttpPost]
+        public async Task<ActionResult<LeaveTotalResult>> GetLeaveTotalRegisterDay(LeaveTotalRequest leaveTotalRequest)
+        {
+            List<DateTime> holidays = await (from p in _context.Holidays where p.workingDay <= leaveTotalRequest.leaveTo && p.workingDay >= leaveTotalRequest.leaveFrom select p.workingDay).ToListAsync();
+            //var data= await _context.Holidays.Where(x=> x.workingDay <= leaveTotalRequest.leaveTo && x.workingDay >= leaveTotalRequest.leaveFrom).ToListAsync();
+            double countHoliday = holidays.Count();
+            //List<DateTime> list = list.Where(s => s.startDate >= leaveTotalRequest.leaveFrom && s.endDate <= leaveTotalRequest.leaveTo);
+            DateTime dateNext = leaveTotalRequest.leaveFrom;
+            string manualCode = (from p in _context.LeaveManuals where p.ID == leaveTotalRequest.manualId && p.ACTFLG=="A" select p.CODE).FirstOrDefault();
+            string shiftCode = string.Empty;
+            if (leaveTotalRequest.leaveTimeId == -1)
+            {
+                shiftCode = "-1";
+            }
+            else
+            {
+                 shiftCode = (from p in _context.LeaveTimes where p.ID == leaveTotalRequest.leaveTimeId select p.CODE).FirstOrDefault();
+            }
+            
+            double countNgayLe = 0;
+            double diff = (leaveTotalRequest.leaveTo - leaveTotalRequest.leaveFrom).TotalDays + 1;
+            double totalDaySal = 0;
+            double totalDayNonSal = 0;
+            double DayOffNumb = 0;
+            DataTable dataTable = new DataTable();
+            OracleCommand command = new OracleCommand();
+            try
+            {
+                while(dateNext <= leaveTotalRequest.leaveTo)
+                {
+                    if (manualCode.ToUpper()!="PTT" && manualCode.ToUpper() != "T7CN")
+                    {
+                        if(dateNext.DayOfWeek==DayOfWeek.Sunday || dateNext.DayOfWeek == DayOfWeek.Saturday)
+                        {
+                            countNgayLe = countNgayLe + 1;
+                            DateTime? outDate = holidays.Where(x => x.Day == dateNext.Day && x.Month == dateNext.Month && x.Year == dateNext.Year ).FirstOrDefault();
+                            if (outDate.GetHashCode() != 0)
+                            {
+                                countHoliday = countHoliday - 1;
+                            }
+                        }
+                    }else if(manualCode.ToUpper()== "T7CN")
+                    {
+                        if (dateNext.DayOfWeek == DayOfWeek.Sunday || dateNext.DayOfWeek == DayOfWeek.Saturday)
+                        {
+                            countNgayLe = countNgayLe + 1;
+                        }
+                    }
+                    dateNext = dateNext.AddDays(1);
+                }
+                if (manualCode.ToUpper() == "TS")
+                {
+                    diff = diff;
+
+                }
+                else
+                {
+                    diff = diff - (countHoliday + countNgayLe);
+                }
+                Boolean isFullDay = shiftCode == "C_ALL" ? true : false;
+                double factor = isFullDay==true ? 1 : 0.5;
+                if (shiftCode != "-1")
+                {
+                    if (shiftCode == "T7CN")
+                        DayOffNumb = (countNgayLe * factor);
+                    else if (shiftCode == "NL")
+                        DayOffNumb = (countHoliday * factor);
+                    else
+                        DayOffNumb = (diff * factor);
+                }
+                else
+                    DayOffNumb = diff;
+
+                command.CommandText = "PKG_ATTENDANCE_BUSINESS.GET_REMAIN_LEAVE_SHEET_API";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add(new OracleParameter("P_EMP_IDS", OracleDbType.Clob, 1000, leaveTotalRequest.employeeId.ToString(), ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_YEAR", OracleDbType.Decimal, 4, leaveTotalRequest.leaveFrom.Year, ParameterDirection.Input));
+                command.Parameters.Add(new OracleParameter("P_CUR", OracleDbType.RefCursor, ParameterDirection.Output));
+                _oracleDBManager = new OracleDBManager(command, _configuration.GetConnectionString("DbConnect").ToString());
+                dataTable = await _oracleDBManager.GetDataTableAsync();
+                double curHave = double.Parse(dataTable?.Rows[0]?["CUR_HAVE"]?.ToString());
+
+                if (curHave >= DayOffNumb)
+                {
+                    totalDaySal = DayOffNumb;
+                }
+                else
+                {
+                    totalDayNonSal = DayOffNumb - curHave;
+                    totalDaySal = curHave;
+                }
+                   
+
+                return new LeaveTotalResult { employeeId =leaveTotalRequest.employeeId, daySal = totalDaySal,dayNonSal=totalDayNonSal,  year = leaveTotalRequest.leaveTo.Year };
+              
+            }catch(Exception ex)
+            {
+                return NotFound();
+            }
+            finally
+            {
+                dataTable.Dispose();
+                command.Dispose();
+            }
+
+           
+        }
+
         [Route("leave-entitlement")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Entitlement>>> GetEntitlements(string employeeId,int year=2021)
